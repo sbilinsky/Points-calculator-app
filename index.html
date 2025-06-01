@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<link rel="manifest" href="manifest.json">
-<link rel="icon" href="IMG_0379.jpeg" type="image/jpeg">
-<meta name="theme-color" content="#68C7E6">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="IMG_0379.jpeg" type="image/jpeg">
+  <meta name="theme-color" content="#68C7E6">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rabbit Show Points Calculator</title>
-	<marquee>Always remember how much your parents do for you. Most kids dont get this. We love you!!!!</marquee>
+  <marquee>Always remember how much your parents do for you. Most kids don't get this. We love you!!!!</marquee>
   <style>
     body {
       background-color: #A9A9A9;
@@ -175,6 +175,7 @@
 
       totalPoints += points;
       entries.push({ rabbitName, entry, placing, points });
+      saveToLocal();
       updateResults();
 
       if (!showPrinted) {
@@ -220,6 +221,7 @@
         }
       });
 
+      saveToLocal();
       updateResults();
     }
 
@@ -227,6 +229,28 @@
       document.getElementById('results').innerHTML =
         `📈 Total Points: ${totalPoints}`;
     }
+
+    function saveToLocal() {
+      localStorage.setItem('rabbitEntries', JSON.stringify(entries));
+      localStorage.setItem('rabbitTotalPoints', totalPoints);
+    }
+
+    window.onload = function () {
+      const savedEntries = localStorage.getItem('rabbitEntries');
+      const savedPoints = localStorage.getItem('rabbitTotalPoints');
+
+      if (savedEntries) {
+        entries = JSON.parse(savedEntries);
+        totalPoints = parseFloat(savedPoints) || 0;
+        updateResults();
+
+        entries.forEach((entry, index) => {
+          if (entry) {
+            addEntryToList(entry.rabbitName, entry.entry, entry.placing, entry.points, index);
+          }
+        });
+      }
+    };
   </script>
 
 </body>
