@@ -151,6 +151,7 @@
   <script>
     let showPrinted = false;
     let totalPoints = 0;
+    let totalQualityPoints = 0;
     let entries = [];
 
     function calculatePoints() {
@@ -178,8 +179,19 @@
         case 'BOS': points = entry * 0.5; break;
       }
 
+      let qualityPoints = 0;
+      switch (placing) {
+        case 'BOB': qualityPoints = 2; break;
+        case 'BOS': qualityPoints = 1; break;
+        case 'BIS': qualityPoints = 6; break;
+        case 'RIS': qualityPoints = 5; break;
+        default: qualityPoints = 0;
+      }
+
       totalPoints += points;
-      entries.push({ showName, rabbitName, entry, placing, points });
+      totalQualityPoints += qualityPoints;
+
+      entries.push({ showName, rabbitName, entry, placing, points, qualityPoints });
       saveToLocal();
       updateResults();
 
@@ -189,14 +201,14 @@
         showPrinted = true;
       }
 
-      addEntryToList(rabbitName, entry, placing, points, entries.length - 1);
+      addEntryToList(rabbitName, entry, placing, points, qualityPoints, entries.length - 1);
 
       document.getElementById('rabbitName').value = '';
       document.getElementById('entry').value = '';
       document.getElementById('placing').selectedIndex = 0;
     }
 
-    function addEntryToList(name, entry, placing, points, index) {
+    function addEntryToList(name, entry, placing, points, qualityPoints, index) {
       const entryList = document.getElementById('entryList');
       const div = document.createElement('div');
       div.className = 'entry-item';
@@ -206,7 +218,8 @@
         🐰 <strong>${name}</strong><br>
         Class Size: ${entry}<br>
         Placing: ${placing}<br>
-        Points: ${points}
+        Variety Points: ${points}<br>
+        Quality Points: ${qualityPoints}
         <button class="delete-btn" onclick="deleteEntry(${index})">🗑️</button>
       `;
 
@@ -216,6 +229,7 @@
     function deleteEntry(index) {
       if (entries[index]) {
         totalPoints -= entries[index].points;
+        totalQualityPoints -= entries[index].qualityPoints;
         entries[index] = null;
       }
 
@@ -232,12 +246,13 @@
 
     function updateResults() {
       document.getElementById('results').innerHTML =
-        `📈 Total Points: ${totalPoints}`;
+        `📈 Total Variety Points: ${totalPoints}<br>🎖️ Total Quality Points: ${totalQualityPoints}`;
     }
 
     function saveToLocal() {
       localStorage.setItem('rabbitEntries', JSON.stringify(entries));
       localStorage.setItem('rabbitTotalPoints', totalPoints);
+      localStorage.setItem('rabbitTotalQualityPoints', totalQualityPoints);
     }
 
     function downloadCSV() {
@@ -248,10 +263,10 @@
       }
 
       let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Show Name,Rabbit Name,Class Size,Placing,Points\n";
+      csvContent += "Show Name,Rabbit Name,Class Size,Placing,Variety Points,Quality Points\n";
 
       filteredEntries.forEach(entry => {
-        csvContent += `${entry.showName},${entry.rabbitName},${entry.entry},${entry.placing},${entry.points}\n`;
+        csvContent += `${entry.showName},${entry.rabbitName},${entry.entry},${entry.placing},${entry.points},${entry.qualityPoints}\n`;
       });
 
       const encodedUri = encodeURI(csvContent);
@@ -266,6 +281,7 @@
     window.onload = function () {
       const savedEntries = localStorage.getItem('rabbitEntries');
       const savedPoints = localStorage.getItem('rabbitTotalPoints');
+      const savedQualityPoints = localStorage.getItem('rabbitTotalQualityPoints');
       const lastShowName = localStorage.getItem('lastShowName');
 
       if (lastShowName) {
@@ -275,11 +291,12 @@
       if (savedEntries) {
         entries = JSON.parse(savedEntries);
         totalPoints = parseFloat(savedPoints) || 0;
+        totalQualityPoints = parseFloat(savedQualityPoints) || 0;
         updateResults();
 
         entries.forEach((entry, index) => {
           if (entry) {
-            addEntryToList(entry.rabbitName, entry.entry, entry.placing, entry.points, index);
+            addEntryToList(entry.rabbitName, entry.entry, entry.placing, entry.points, entry.qualityPoints, index);
           }
         });
       }
