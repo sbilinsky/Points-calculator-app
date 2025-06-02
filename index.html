@@ -154,7 +154,8 @@
     let entries = [];
 
     function calculatePoints() {
-      const showName = document.getElementById('showName').value.trim();
+      const showNameInput = document.getElementById('showName');
+      const showName = showNameInput.value.trim();
       const rabbitName = document.getElementById('rabbitName').value.trim();
       const entry = parseInt(document.getElementById('entry').value);
       const placing = document.getElementById('placing').value;
@@ -163,6 +164,8 @@
         document.getElementById('results').innerText = '⚠️ Please fill out all fields correctly.';
         return;
       }
+
+      localStorage.setItem('lastShowName', showName);
 
       let points = 0;
       switch (placing) {
@@ -176,7 +179,7 @@
       }
 
       totalPoints += points;
-      entries.push({ rabbitName, entry, placing, points });
+      entries.push({ showName, rabbitName, entry, placing, points });
       saveToLocal();
       updateResults();
 
@@ -245,10 +248,10 @@
       }
 
       let csvContent = "data:text/csv;charset=utf-8,";
-      csvContent += "Rabbit Name,Class Size,Placing,Points\n";
+      csvContent += "Show Name,Rabbit Name,Class Size,Placing,Points\n";
 
       filteredEntries.forEach(entry => {
-        csvContent += `${entry.rabbitName},${entry.entry},${entry.placing},${entry.points}\n`;
+        csvContent += `${entry.showName},${entry.rabbitName},${entry.entry},${entry.placing},${entry.points}\n`;
       });
 
       const encodedUri = encodeURI(csvContent);
@@ -263,6 +266,11 @@
     window.onload = function () {
       const savedEntries = localStorage.getItem('rabbitEntries');
       const savedPoints = localStorage.getItem('rabbitTotalPoints');
+      const lastShowName = localStorage.getItem('lastShowName');
+
+      if (lastShowName) {
+        document.getElementById('showName').value = lastShowName;
+      }
 
       if (savedEntries) {
         entries = JSON.parse(savedEntries);
