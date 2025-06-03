@@ -318,26 +318,37 @@ async function generatePDF() {
 
   // Load watermark image (local)
   const watermarkImg = new Image();
-  watermarkImg.src = "IMG_0379.jpeg"; // Rename if needed to match GitHub file
+watermarkImg.src = "IMG_0379.jpeg"; // or whatever your actual file is
 
-  await new Promise(resolve => {
-    watermarkImg.onload = resolve;
-  });
+await new Promise(resolve => {
+  watermarkImg.onload = resolve;
+});
 
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
+const pageWidth = doc.internal.pageSize.getWidth();
+const pageHeight = doc.internal.pageSize.getHeight();
 
-  // Add transparent watermark image
-  doc.setGState(new doc.GState({ opacity: 0.1 }));
-  doc.addImage(
-    watermarkImg,
-    'JPEG',
-    pageWidth / 2,
-    pageHeight / 2,
-    pageWidth / 2,
-    pageHeight / 2
-  );
-  doc.setGState(new doc.GState({ opacity: 1 })); // Reset opacity
+const boxSize = 100; // This is how big the watermark appears on the page
+const centerX = (pageWidth - boxSize) / 2;
+const centerY = (pageHeight - boxSize) / 2;
+
+// Maintain aspect ratio
+const aspectRatio = watermarkImg.width / watermarkImg.height;
+let drawWidth, drawHeight;
+
+if (aspectRatio >= 1) {
+  drawWidth = boxSize;
+  drawHeight = boxSize / aspectRatio;
+} else {
+  drawHeight = boxSize;
+  drawWidth = boxSize * aspectRatio;
+}
+
+const offsetX = centerX + (boxSize - drawWidth) / 2;
+const offsetY = centerY + (boxSize - drawHeight) / 2;
+
+doc.setGState(new doc.GState({ opacity: 0.1 }));
+doc.addImage(watermarkImg, 'JPEG', offsetX, offsetY, drawWidth, drawHeight);
+doc.setGState(new doc.GState({ opacity: 1 })); // Reset opacity
 
   let y = 20;
 doc.setFontSize(16);
