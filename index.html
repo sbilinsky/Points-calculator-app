@@ -1,1 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rabbit Show Points Calculator</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="IMG_0379.jpeg" type="image/jpeg">
+  <meta name="theme-color" content="#68C7E6">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      background-color: #A9A9A9;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      color: #000;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    .title-container {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 4px solid purple;
+      border-radius: 15px;
+      box-shadow: 0 0 10px purple;
+      background-color: #68C7E6;
+    }
+    h1 {
+      font-size: 26px;
+      font-weight: bold;
+      color: purple;
+    }
+    label {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    input, select {
+      width: 100%;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 12px;
+      margin-top: 8px;
+      border: 2px solid #555;
+      border-radius: 8px;
+      color: #000;
+    }
+    button {
+      width: 100%;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 14px;
+      margin-top: 25px;
+      background-color: purple;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #333;
+    }
+    .delete-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 5px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    #results, #summary {
+      margin-top: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 12px;
+      background-color: #fff;
+      border-radius: 8px;
+      text-align: center;
+    }
+    #entryList {
+      text-align: left;
+      margin-top: 10px;
+    }
+    .entry-item {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-bottom: 1px solid #ccc;
+    }
+    .row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .half {
+      flex: 1;
+      min-width: 240px;
+    }
+  </style>
+</head>
+<body>
 
+  <div class="title-container">
+    <h1>🐇 Rabbit Show Points Calculator</h1>
+  </div>
+
+  <div class="row">
+    <div class="half">
+      <label for="showName">Show Name (printed once):</label>
+      <input type="text" id="showName" name="showName" placeholder="e.g., Rustic Moon ARBA Show">
+    </div>
+    <div class="half">
+      <label for="showCode">Show Code:</label>
+      <select id="showCode">
+        <option value="" disabled selected>Select a show code</option>
+        <option value="A">Show A</option>
+        <option value="B">Show B</option>
+        <option value="C">Show C</option>
+        <option value="D">Show D</option>
+        <option value="E">Show E</option>
+      </select>
+    </div>
+  </div>
+
+  <label for="judgeName">Judge:</label>
+  <input type="text" id="judgeName" placeholder="e.g., Jane Smith">
+
+  <label for="rabbitName">Rabbit Name:</label>
+  <input type="text" id="rabbitName" placeholder="e.g., Encore">
+
+  <label for="variety">Variety:</label>
+  <select id="variety">
+    <option value="" disabled selected>Select Variety</option>
+    <option>Black</option>
+    <option>Blue</option>
+    <option>Broken</option>
+    <option>Chocolate</option>
+    <option>Lilac</option>
+    <option>BEW</option>
+    <option>REW</option>
+  </select>
+
+  <label for="entry">Number of Rabbits in Class:</label>
+  <input type="number" id="entry" placeholder="Enter total rabbits">
+
+  <label for="placing">Placing:</label>
+  <select id="placing">
+    <option value="" disabled selected>Select Placing</option>
+    <option value="1">1st Place</option>
+    <option value="2">2nd Place</option>
+    <option value="3">3rd Place</option>
+    <option value="4">4th Place</option>
+    <option value="5">5th Place</option>
+    <option value="BOB">Best of Breed</option>
+    <option value="BOS">Best Opposite Sex</option>
+    <option value="BIS">Best In Show</option>
+    <option value="RIS">Reserve In Show</option>
+  </select>
+
+  <button onclick="calculatePoints()">Calculate Points</button>
+  <div id="results"></div>
+  <div id="summary"></div>
+  <div id="entryList"></div>
+  <button onclick="downloadCSV()">📄 Download CSV</button>
+  <button onclick="downloadPDF()">📄 Download PDF</button>
+
+<script>
+  const entries = [];
+  let totalPoints = 0, totalQualityPoints = 0;
+
+  const watermarkImg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAYACAIAAABn4K39AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABK"; // logo snippet
+
+  function calculatePoints() {
+    const showName = document.getElementById('showName').value;
+    const showCode = document.getElementById('showCode').value;
+    const judgeName = document.getElementById('judgeName').value;
+    const rabbitName = document.getElementById('rabbitName').value;
+    const variety = document.getElementById('variety').value;
+    const entry = parseInt(document.getElementById('entry').value);
+    const placing = document.getElementById('placing').value;
+
+    if (!showName || !showCode || !judgeName || !rabbitName || !variety || !entry || !placing) {
+      alert("Please fill out all fields.");
+      return;
+    }
+
+    let points = 0, quality = 0;
+    switch (placing) {
+      case '1': points = entry * 6; break;
+      case '2': points = entry * 4; break;
+      case '3': points = entry * 3; break;
+      case '4': points = entry * 2; break;
+      case '5': points = entry * 1; break;
+      case 'BOB': points = entry; quality = 2; break;
+      case 'BOS': points = entry * 0.5; quality = 1; break;
+      case 'BIS': quality = 6; break;
+      case 'RIS': quality = 5; break;
+    }
+
+    totalPoints += points;
+    totalQualityPoints += quality;
+
+    entries.push({ showName, showCode, judgeName, rabbitName, variety, entry, placing, points, quality });
+    updateResults();
+  }
+
+  function updateResults() {
+    document.getElementById('results').innerHTML =
+      `📈 Total Variety Points: ${totalPoints}<br>🎖️ Total Quality Points: ${totalQualityPoints}`;
+  }
+
+  function downloadCSV() {
+    let csv = "Show Name,Show Code,Judge,Rabbit Name,Variety,Class Size,Placing,Variety Points,Quality Points\n";
+    entries.forEach(e =>
+      csv += `${e.showName},${e.showCode},${e.judgeName},${e.rabbitName},${e.variety},${e.entry},${e.placing},${e.points},${e.quality}\n`
+    );
+    const blob = new Blob([csv], { type: "text/csv" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "rabbit_show_points.csv";
+    link.click();
+  }
+
+  async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const grouped = {};
+
+    entries.forEach(e => {
+      if (!grouped[e.showCode]) grouped[e.showCode] = [];
+      grouped[e.showCode].push(e);
+    });
+
+    let y = 20;
+    doc.setFontSize(18);
+    doc.text("Rustic Moon ARBA Show Points Summary", 105, y, { align: "center" });
+    y += 10;
+    doc.setFontSize(12);
+    doc.text(new Date().toLocaleDateString(), 105, y, { align: "center" });
+    y += 10;
+
+    for (let code in grouped) {
+      const group = grouped[code];
+      const { judgeName } = group[0];
+      doc.setFontSize(14);
+      doc.text(`Show ${code}`, 20, y += 10);
+      doc.setFontSize(12);
+      doc.text(`Judge: ${judgeName}`, 20, y += 7);
+      doc.autoTable({
+        startY: y += 5,
+        head: [["Rabbit Name", "Variety", "Class Size", "Placing", "Variety Points", "Quality Points"]],
+        body: group.map(e => [e.rabbitName, e.variety, e.entry, e.placing, e.points, e.quality]),
+        theme: "grid",
+        margin: { left: 20 },
+        styles: { fontSize: 10 }
+      });
+      y = doc.lastAutoTable.finalY + 10;
+    }
+
+    doc.setFontSize(12);
+    doc.text(`Total Variety Points: ${totalPoints}`, 20, y += 5);
+    doc.text(`Total Quality Points: ${totalQualityPoints}`, 20, y += 7);
+
+    const imgProps = doc.getImageProperties(watermarkImg);
+    const imgW = 100;
+    const imgH = (imgProps.height * imgW) / imgProps.width;
+    doc.addImage(watermarkImg, 'PNG', 55, 100, imgW, imgH);
+
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(10);
+      doc.text(`Page ${i}`, 190, 290);
+    }
+
+    doc.save("rabbit_show_report.pdf");
+  }
+</script>
+
+</body>
+</html>
