@@ -340,25 +340,25 @@ async function generatePDF() {
   doc.setGState(new doc.GState({ opacity: 1 })); // Reset opacity
 
   let y = 20;
-  doc.setFontSize(16);
-  doc.text("Rabbit Show Points Summary", 10, y);
-  y += 10;
+doc.setFontSize(16);
+doc.text("Rabbit Show Points Summary", 10, y);
+y += 10;
 
-  const today = new Date().toLocaleDateString();
-  doc.setFontSize(12);
-  doc.text(`Date: ${today}`, 10, y);
-  y += 10;
+const today = new Date().toLocaleDateString();
+doc.setFontSize(12);
+doc.text(`Date: ${today}`, 10, y);
+y += 10;
 
-  doc.setFontSize(11);
-  doc.text("Rabbit Name  Variety  Class Size  Placing  Variety Pts  Quality Pts", 10, y);
-  y += 8;
+doc.setFont("Courier", "normal");
+doc.setFontSize(10);
+doc.text("Rabbit Name       Variety      Class  Placing  VPts  QPts", 10, y);
+y += 8;
 
-  filtered.forEach(e => {
-    const line = `${e.rabbitName}  ${e.variety}  ${e.entry}  ${e.placing}  ${e.points}  ${e.qualityPoints}`;
-    doc.text(line, 10, y);
-    y += 6;
-  });
-
+filtered.forEach(e => {
+  const line = `${e.rabbitName.padEnd(18)}${e.variety.padEnd(13)}${String(e.entry).padEnd(7)}${e.placing.padEnd(9)}${String(e.points).padEnd(6)}${String(e.qualityPoints).padEnd(5)}`;
+  doc.text(line, 10, y);
+  y += 6;
+});
   y += 8;
   doc.setFontSize(12);
   doc.text(`Total Variety Points: ${totalPoints}`, 10, y);
