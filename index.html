@@ -1,1 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="IMG_0379.jpeg" type="image/jpeg">
+  <meta name="theme-color" content="#68C7E6">
+  <title>Rabbit Show Points Calculator</title>
+  <style>
+    body {
+      background-color: #A9A9A9;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      color: #000;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
 
+    .title-container {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 4px solid purple;
+      border-radius: 15px;
+      box-shadow: 0 0 10px purple;
+      background-color: #68C7E6;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    label, select, input {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .summary {
+      margin-top: 30px;
+      padding: 10px;
+      background-color: #e6e6e6;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <marquee>Always remember how much your parents do for you. Most kids don't get this. We love you!!!!</marquee>
+
+  <div class="title-container">
+    <h1>Rabbit Show Points Calculator</h1>
+  </div>
+
+  <label for="showName">Show Name:</label>
+  <input type="text" id="showName" />
+
+  <label for="showCode">Show Code:</label>
+  <select id="showCode">
+    <option value="A">A</option>
+    <option value="B">B</option>
+    <option value="C">C</option>
+  </select>
+
+  <label for="judge">Judge:</label>
+  <input type="text" id="judge" />
+
+  <label for="rabbitName">Rabbit Name:</label>
+  <input type="text" id="rabbitName" />
+
+  <label for="variety">Variety:</label>
+  <select id="variety">
+    <option value="Black">Black</option>
+    <option value="Blue">Blue</option>
+    <option value="Broken">Broken</option>
+    <option value="Chocolate">Chocolate</option>
+    <option value="Lilac">Lilac</option>
+    <option value="BEW">BEW</option>
+    <option value="REW">REW</option>
+  </select>
+
+  <label for="entryCount">Number of Rabbits in Class:</label>
+  <input type="number" id="entryCount" />
+
+  <label for="placing">Placing (1st-5th, BOB, BOS):</label>
+  <input type="text" id="placing" />
+
+  <button onclick="addEntry()">Add Entry</button>
+  <button onclick="exportCSV()">Export CSV</button>
+
+  <div class="summary" id="summaryDisplay"></div>
+  <table id="entryTable">
+    <thead>
+      <tr>
+        <th>Show Code</th>
+        <th>Judge</th>
+        <th>Rabbit Name</th>
+        <th>Variety</th>
+        <th>Entry Count</th>
+        <th>Placing</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const showNameInput = document.getElementById('showName');
+    const showCodeInput = document.getElementById('showCode');
+    const judgeInput = document.getElementById('judge');
+    const rabbitNameInput = document.getElementById('rabbitName');
+    const varietyInput = document.getElementById('variety');
+    const entryCountInput = document.getElementById('entryCount');
+    const placingInput = document.getElementById('placing');
+    const summaryDisplay = document.getElementById('summaryDisplay');
+    const entryTable = document.getElementById('entryTable').getElementsByTagName('tbody')[0];
+
+    let entries = JSON.parse(localStorage.getItem('entries')) || [];
+    let showName = localStorage.getItem('showName') || '';
+    let showCode = localStorage.getItem('showCode') || 'A';
+    let judge = localStorage.getItem('judge') || '';
+
+    showNameInput.value = showName;
+    showCodeInput.value = showCode;
+    judgeInput.value = judge;
+
+    function updateSummary() {
+      summaryDisplay.innerHTML = `
+        <strong>Show Name:</strong> ${showName}<br/>
+        <strong>Judge:</strong> ${judge}
+      `;
+    }
+
+    function updateTable() {
+      entryTable.innerHTML = '';
+      entries.forEach(entry => {
+        const row = entryTable.insertRow();
+        row.insertCell(0).innerText = entry.showCode;
+        row.insertCell(1).innerText = entry.judge;
+        row.insertCell(2).innerText = entry.rabbitName;
+        row.insertCell(3).innerText = entry.variety;
+        row.insertCell(4).innerText = entry.entryCount;
+        row.insertCell(5).innerText = entry.placing;
+      });
+    }
+
+    function addEntry() {
+      const entry = {
+        showCode: showCodeInput.value,
+        judge: judgeInput.value,
+        rabbitName: rabbitNameInput.value,
+        variety: varietyInput.value,
+        entryCount: entryCountInput.value,
+        placing: placingInput.value
+      };
+
+      entries.push(entry);
+      localStorage.setItem('entries', JSON.stringify(entries));
+
+      // Save persistent values
+      showName = showNameInput.value;
+      showCode = showCodeInput.value;
+      judge = judgeInput.value;
+
+      localStorage.setItem('showName', showName);
+      localStorage.setItem('showCode', showCode);
+      localStorage.setItem('judge', judge);
+
+      updateSummary();
+      updateTable();
+
+      rabbitNameInput.value = '';
+      entryCountInput.value = '';
+      placingInput.value = '';
+    }
+
+    function exportCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Show Name,Show Code,Judge,Rabbit Name,Variety,Entry Count,Placing\n";
+      entries.forEach(entry => {
+        csvContent += `"${showName}","${entry.showCode}","${entry.judge}","${entry.rabbitName}","${entry.variety}","${entry.entryCount}","${entry.placing}"\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "rabbit_show_points.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Initialize table on load
+    updateSummary();
+    updateTable();
+  </script>
+</body>
+</html>
