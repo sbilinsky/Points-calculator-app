@@ -1,1 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rabbit Show Points Calculator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body {
+      background-color: #A9A9A9;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      color: #000;
+    }
+    h1 { color: purple; text-align: center; }
+    label { display: block; margin-top: 20px; font-weight: bold; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-weight: bold;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 2px solid #555;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      font-weight: bold;
+      background: purple;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #results, #summary {
+      margin-top: 20px;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .entry-item {
+      border-bottom: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
 
+<h1>🐇 Rabbit Show Points Calculator</h1>
+
+<label>Show Name</label>
+<input id="showName" placeholder="e.g., Rustic Moon ARBA Show"/>
+
+<label>Show Code</label>
+<select id="showCode">
+  <option value="" disabled selected>Select a show code</option>
+  <option value="A">Show A</option>
+  <option value="B">Show B</option>
+  <option value="C">Show C</option>
+  <option value="D">Show D</option>
+  <option value="E">Show E</option>
+</select>
+
+<label>Judge</label>
+<input id="judgeName" placeholder="e.g., Jane Smith"/>
+
+<label>Rabbit Name</label>
+<input id="rabbitName" placeholder="e.g., Encore"/>
+
+<label>Variety</label>
+<select id="variety">
+  <option value="" disabled selected>Select Variety</option>
+  <option>Black</option><option>Blue</option><option>Broken</option>
+  <option>Chocolate</option><option>Lilac</option>
+  <option>BEW</option><option>REW</option>
+</select>
+
+<label>Number of Rabbits in Class</label>
+<input id="entry" type="number"/>
+
+<label>Placing</label>
+<select id="placing">
+  <option value="" disabled selected>Select Placing</option>
+  <option value="1">1st Place</option>
+  <option value="2">2nd Place</option>
+  <option value="3">3rd Place</option>
+  <option value="4">4th Place</option>
+  <option value="5">5th Place</option>
+  <option value="BOB">Best of Breed</option>
+  <option value="BOS">Best Opposite Sex</option>
+  <option value="BIS">Best In Show</option>
+  <option value="RIS">Reserve In Show</option>
+</select>
+
+<button onclick="calculatePoints()">Calculate Points</button>
+<div id="results"></div>
+<div id="summary"></div>
+<div id="entryList"></div>
+<button onclick="downloadCSV()">📄 Download CSV</button>
+<button onclick="downloadPDF()">📄 Download PDF Report</button>
+
+<script>
+  let entries = [], totalPoints = 0, totalQualityPoints = 0;
+
+  const watermarkImg =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAYACAIAAABn4K39AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABK"; // (truncated for brevity)
+
+  function calculatePoints() {
+    const showName = document.getElementById("showName").value;
+    const showCode = document.getElementById("showCode").value;
+    const judgeName = document.getElementById("judgeName").value;
+    const rabbitName = document.getElementById("rabbitName").value;
+    const variety = document.getElementById("variety").value;
+    const entry = parseInt(document.getElementById("entry").value);
+    const placing = document.getElementById("placing").value;
+
+    if (!showName || !showCode || !judgeName || !rabbitName || !variety || !entry || !placing) {
+      alert("Please fill out all fields");
+      return;
+    }
+
+    let points = 0, quality = 0;
+    if (placing == 1) points = entry * 6;
+    if (placing == 2) points = entry * 4;
+    if (placing == 3) points = entry * 3;
+    if (placing == 4) points = entry * 2;
+    if (placing == 5) points = entry * 1;
+    if (placing == "BOB") { points = entry * 1; quality = 2; }
+    if (placing == "BOS") { points = entry * 0.5; quality = 1; }
+    if (placing == "BIS") quality = 6;
+    if (placing == "RIS") quality = 5;
+
+    entries.push({ showName, showCode, judgeName, rabbitName, variety, entry, placing, points, quality });
+    totalPoints += points;
+    totalQualityPoints += quality;
+
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    document.getElementById("results").innerHTML =
+      `Total Variety Points: ${totalPoints}<br>Total Quality Points: ${totalQualityPoints}`;
+    document.getElementById("entryList").innerHTML = entries.map(e => `
+      <div class="entry-item">
+        🐰 ${e.rabbitName} (${e.variety}) - ${e.placing}<br>
+        Show: ${e.showCode}, Judge: ${e.judgeName}, Class Size: ${e.entry}<br>
+        Variety Points: ${e.points}, Quality Points: ${e.quality}
+      </div>`).join("");
+  }
+
+  function downloadCSV() {
+    let csv = "Show Name,Show Code,Judge,Rabbit,Variety,Class Size,Placing,Variety Points,Quality Points\n";
+    entries.forEach(e => {
+      csv += `${e.showName},${e.showCode},${e.judgeName},${e.rabbitName},${e.variety},${e.entry},${e.placing},${e.points},${e.quality}\n`;
+    });
+    const link = document.createElement("a");
+    link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    link.download = "rabbit_points.csv";
+    link.click();
+  }
+
+  async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const grouped = {};
+
+    entries.forEach(e => {
+      if (!grouped[e.showCode]) grouped[e.showCode] = [];
+      grouped[e.showCode].push(e);
+    });
+
+    let y = 20, page = 1;
+
+    doc.setFontSize(18);
+    doc.text("Rustic Moon ARBA Show Report", 20, y);
+    y += 10;
+
+    for (let code in grouped) {
+      const list = grouped[code];
+      const { showName, judgeName } = list[0];
+
+      y += 10;
+      if (y > 260) {
+        doc.addPage();
+        y = 20;
+        page++;
+      }
+
+      doc.setFontSize(14);
+      doc.text(`Show ${code}`, 20, y);
+      doc.setFontSize(12);
+      doc.text(`Judge: ${judgeName}`, 20, y += 7);
+
+      list.forEach(e => {
+        if (y > 260) {
+          doc.addPage();
+          y = 20;
+          page++;
+        }
+        doc.text(`🐰 ${e.rabbitName} (${e.variety}) - ${e.placing} | Class: ${e.entry} | VarPts: ${e.points} | QualPts: ${e.quality}`, 20, y += 8);
+      });
+    }
+
+    y += 15;
+    doc.setFontSize(12);
+    doc.text(`Total Variety Points: ${totalPoints}`, 20, y);
+    doc.text(`Total Quality Points: ${totalQualityPoints}`, 20, y + 7);
+
+    const imgProps = doc.getImageProperties(watermarkImg);
+    const imgWidth = 60;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+    doc.addImage(watermarkImg, 'PNG', 120, 10, imgWidth, imgHeight);
+
+    for (let i = 0; i < doc.getNumberOfPages(); i++) {
+      doc.setPage(i + 1);
+      doc.text(`Page ${i + 1}`, 170, 290);
+    }
+
+    doc.save("rabbit_show_report.pdf");
+  }
+</script>
+
+</body>
+</html>
