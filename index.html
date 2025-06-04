@@ -122,7 +122,21 @@
 .bunny {
   width: 100px;
 }
+.poop {
+  position: fixed;
+  bottom: 40px;
+  font-size: 20px;
+  animation: fallDown 2s forwards;
+}
 
+@keyframes hopAcross {
+  0% { left: 90%; }
+  100% { left: -10%; }
+}
+
+@keyframes fallDown {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(30
 @keyframes hopStep {
   0%   { left: 100%;}   
   10%  { left: 90%; }   
@@ -460,6 +474,30 @@ window.onload = function () {
 };
 
 window.generatePDF = generatePDF;
+</script>
+  <script>
+  const bunnyWrapper = document.querySelector('.bunny-wrapper');
+
+  function dropPoop() {
+    const poop = document.createElement('div');
+    poop.className = 'poop';
+    poop.textContent = '💩';
+    
+    // Get bunny position
+    const bunnyRect = bunnyWrapper.getBoundingClientRect();
+    poop.style.left = `${bunnyRect.left + 40}px`; // center of bunny
+    poop.style.bottom = '40px';
+    
+    document.body.appendChild(poop);
+    
+    // Clean up after animation
+    setTimeout(() => {
+      poop.remove();
+    }, 2000);
+  }
+
+  // Drop poop every 800ms while bunny is moving
+  setInterval(dropPoop, 800);
 </script>
 </body>
 </html>
