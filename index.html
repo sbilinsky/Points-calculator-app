@@ -124,13 +124,13 @@
 }
 
 @keyframes hopStep {
-  0%   { left: 90%; }   /* paused on ground */
-  25%  { left: 90%; }   /* still paused */
+  0%   { left: 90%; }   /* landed */
+  25%  { left: 90%; }   /* still landed */
 
-  50%  { left: 70%; }   /* mid-hop */
-  75%  { left: 50%; }   /* end of hop */
+  50%  { left: 70%; }   /* in the air, moving */
+  75%  { left: 50%; }   /* still in the air, moving */
 
-  100% { left: 50%; }   /* landed and paused */
+  100% { left: 50%; }   /* landed again */
 }
   </style>
 </head>
