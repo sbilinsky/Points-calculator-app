@@ -111,13 +111,40 @@
         font-size: 16px;
       }
     }
+    .bunny-wrapper {
+  position: absolute;
+  top: 20px;
+  left: 100%;
+  animation: hopStep 4s steps(1, end) infinite;
+  z-index: 1000;
+}
+
+.bunny {
+  width: 100px;
+}
+
+@keyframes hopStep {
+  0%   { left: 100%; }
+  10%  { left: 90%; }
+  20%  { left: 80%; }
+  30%  { left: 70%; }
+  40%  { left: 60%; }
+  50%  { left: 50%; }
+  60%  { left: 40%; }
+  70%  { left: 30%; }
+  80%  { left: 20%; }
+  90%  { left: 10%; }
+  100% { left: -120px; }
+}
   </style>
 </head>
 <body>
     <div class="title-container">
     <h1><B><font size="5">APRC Points Calculator</font></B></h1><marquee><font size="7">🐇.test</font></marquee>
   </div>
-
+<div class="bunny-wrapper">
+  <img class="bunny" src="IMG_4020.png" alt="Hopping Bunny">
+</div>
   <div class="row">
     <div class="half">
       <label for="showName">Show Name (printed once):</label>
