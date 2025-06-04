@@ -473,5 +473,26 @@ window.onload = function () {
 
 window.generatePDF = generatePDF;
 </script>
+  <script>
+  const bunnyWrapper = document.querySelector('.bunny-wrapper');
+
+  function dropPoop() {
+    const poop = document.createElement('div');
+    poop.className = 'poop';
+    poop.textContent = '💩';
+
+    const bunnyRect = bunnyWrapper.getBoundingClientRect();
+    poop.style.left = `${bunnyRect.left + 40}px`;
+
+    document.body.appendChild(poop);
+
+    setTimeout(() => {
+      poop.remove();
+    }, 2000);
+  }
+
+  setInterval(dropPoop, 1000); // Adjust interval if needed
+</script>
+  
 </body>
 </html>
