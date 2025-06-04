@@ -475,29 +475,5 @@ window.onload = function () {
 
 window.generatePDF = generatePDF;
 </script>
-  <script>
-  const bunnyWrapper = document.querySelector('.bunny-wrapper');
-
-  function dropPoop() {
-    const poop = document.createElement('div');
-    poop.className = 'poop';
-    poop.textContent = '💩';
-    
-    // Get bunny position
-    const bunnyRect = bunnyWrapper.getBoundingClientRect();
-    poop.style.left = `${bunnyRect.left + 40}px`; // center of bunny
-    poop.style.bottom = '40px';
-    
-    document.body.appendChild(poop);
-    
-    // Clean up after animation
-    setTimeout(() => {
-      poop.remove();
-    }, 2000);
-  }
-
-  // Drop poop every 800ms while bunny is moving
-  setInterval(dropPoop, 800);
-</script>
 </body>
 </html>
