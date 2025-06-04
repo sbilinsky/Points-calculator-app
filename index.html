@@ -124,14 +124,13 @@
 }
 
 @keyframes hopStep {
-  0%   { left: 90%; }   /* pause on ground */
-  20%  { left: 90%; }   /* still paused */
-  
-  30%  { left: 80%; }   /* start hop */
-  60%  { left: 60%; }   /* finish hop */
+  0%   { left: 90%; }   /* paused on ground */
+  25%  { left: 90%; }   /* still paused */
 
-  70%  { left: 60%; }   /* pause on ground */
-  100% { left: 60%; }   /* still paused */
+  50%  { left: 70%; }   /* mid-hop */
+  75%  { left: 50%; }   /* end of hop */
+
+  100% { left: 50%; }   /* landed and paused */
 }
   </style>
 </head>
