@@ -111,11 +111,11 @@
         font-size: 16px;
       }
     }
-    .bunny-wrapper {
+.bunny-wrapper {
   position: absolute;
   top: 20px;
   left: 100%;
-  animation: hopStep 30s steps(8, end) infinite;
+  animation: hopStep 30s linear infinite;
   z-index: 1000;
 }
 
@@ -123,34 +123,37 @@
   width: 100px;
 }
 
+.poop {
+  position: fixed;
+  bottom: 40px;
+  font-size: 20px;
+  animation: fallDown 2s forwards;
+}
 
-@keyframes hopAcross {
-  0% { left: 90%; }
-  100% { left: -10%; }
+@keyframes hopStep {
+  0%   { left: 100%; }
+  10%  { left: 90%; }
+  20%  { left: 80%; }
+  30%  { left: 70%; }
+  40%  { left: 60%; }
+  50%  { left: 50%; }
+  60%  { left: 40%; }
+  70%  { left: 30%; }
+  80%  { left: 20%; }
+  90%  { left: 10%; }
+  100% { left: -150px; }
 }
 
 @keyframes fallDown {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(30
-@keyframes hopStep {
-  20%   { left: 100%;}   
-  20%  { left: 90%; }   
-  20%  { left: 80%; }   
-  30%  { left: 70%; }   
-  40%  { left: 60%; }  
-  50%  { left: 50%; }
-  60%  { left: 40%; }   
-  70%  { left: 30%; }   
-  80%  { left: 20%; }   
-  90%  { left: 10%; }   
-  100% { left: 120px;}  
-  
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(30px); }
 }
-    .left-bunny {
+
+.left-bunny {
   position: fixed;
   bottom: 20px;
   left: 20px;
-  width: 120px; /* or whatever size fits */
+  width: 120px;
   z-index: 10;
 }
   </style>
