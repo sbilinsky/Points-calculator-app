@@ -115,8 +115,9 @@
   position: absolute;
   top: 20px;
   left: 100%;
-  animation: hopStep 30s linear infinite;
   z-index: 1000;
+  opacity: 0; /* Start invisible */
+  transition: opacity 1s ease-in;
 }
 
 .bunny {
@@ -486,9 +487,8 @@ window.generatePDF = generatePDF;
     poop.textContent = '.';
 
     const bunnyRect = bunnyWrapper.getBoundingClientRect();
-
-    poop.style.left = `${bunnyRect.left + 40}px`; // Near bunny center
-    poop.style.top = `${bunnyRect.top + 20}px`;   // Start from bunny height
+    poop.style.left = `${bunnyRect.left + 40}px`;
+    poop.style.top = `${bunnyRect.top + 20}px`;
 
     document.body.appendChild(poop);
 
@@ -497,11 +497,16 @@ window.generatePDF = generatePDF;
     }, 2000);
   }
 
-  setInterval(() => {
-    if (document.querySelector('.bunny-wrapper')) {
-      dropPoop();
-    }
-  }, 1000);
+  function startBunnyAnimation() {
+    bunnyWrapper.style.animation = 'hopStep 30s linear infinite';
+    bunnyWrapper.style.opacity = 1;
+
+    // Start poop drops
+    setInterval(dropPoop, 1000);
+  }
+
+  // 👇 Wait 15 seconds before starting animation
+  setTimeout(startBunnyAnimation, 15000);
 </script>
   
 </body>
