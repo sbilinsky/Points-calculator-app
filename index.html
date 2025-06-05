@@ -128,7 +128,9 @@
   bottom: 40px;
   font-size: 20px;
   animation: fallDown 2s forwards;
+  z-index: 9999;
 }
+  
 
 @keyframes hopStep {
   0%   { left: 100%; }
@@ -473,7 +475,7 @@ window.onload = function () {
 
 window.generatePDF = generatePDF;
 </script>
-  <script>
+<script>
   const bunnyWrapper = document.querySelector('.bunny-wrapper');
 
   function dropPoop() {
@@ -482,16 +484,25 @@ window.generatePDF = generatePDF;
     poop.textContent = '💩';
 
     const bunnyRect = bunnyWrapper.getBoundingClientRect();
+    
+    // Adjust for scroll and make sure bottom and left are visible
     poop.style.left = `${bunnyRect.left + 40}px`;
+    poop.style.bottom = '40px'; // Make sure this is explicitly set
 
     document.body.appendChild(poop);
+
+    console.log('💩 dropped at', poop.style.left); // Debug log
 
     setTimeout(() => {
       poop.remove();
     }, 2000);
   }
 
-  setInterval(dropPoop, 1000); // Adjust interval if needed
+  setInterval(() => {
+    if (document.querySelector('.bunny-wrapper')) {
+      dropPoop();
+    }
+  }, 1000);
 </script>
   
 </body>
