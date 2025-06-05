@@ -125,7 +125,6 @@
 
 .poop {
   position: fixed;
-  bottom: 40px;
   font-size: 20px;
   animation: fallDown 2s forwards;
   z-index: 9999;
@@ -148,7 +147,7 @@
 
 @keyframes fallDown {
   0%   { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 0; transform: translateY(100px); }
 }
 
 .left-bunny {
@@ -484,14 +483,11 @@ window.generatePDF = generatePDF;
     poop.textContent = '💩';
 
     const bunnyRect = bunnyWrapper.getBoundingClientRect();
-    
-    // Adjust for scroll and make sure bottom and left are visible
-    poop.style.left = `${bunnyRect.left + 40}px`;
-    poop.style.bottom = '40px'; // Make sure this is explicitly set
+
+    poop.style.left = `${bunnyRect.left + 40}px`; // Near bunny center
+    poop.style.top = `${bunnyRect.top + 60}px`;   // Start from bunny height
 
     document.body.appendChild(poop);
-
-    console.log('💩 dropped at', poop.style.left); // Debug log
 
     setTimeout(() => {
       poop.remove();
