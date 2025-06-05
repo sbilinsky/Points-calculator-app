@@ -125,9 +125,12 @@
 
 .poop {
   position: fixed;
-  font-size: 20px;
+  font-size: 40px;        /* Make it nice and visible */
+  color: #5c3a1e;         /* Deep brown */
+  font-weight: bold;
   animation: fallDown 2s forwards;
   z-index: 9999;
+  line-height: 1;         /* No weird vertical spacing */
 }
   
 
@@ -480,7 +483,7 @@ window.generatePDF = generatePDF;
   function dropPoop() {
     const poop = document.createElement('div');
     poop.className = 'poop';
-    poop.textContent = '💩';
+    poop.textContent = '.';
 
     const bunnyRect = bunnyWrapper.getBoundingClientRect();
 
